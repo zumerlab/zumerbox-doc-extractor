@@ -1,0 +1,30 @@
+{
+  "name": "@zumerbox/doc-extractor",
+  "version": "0.1.0",
+  "description": "A tool to extract comments from scss, css and js files and create markdown doc files",
+  "main": "./bin/index.js",
+  "type": "module",
+  "bin": {
+    "doc-extractor": "bin/index.js"
+  },
+  "author": "Juan Martin",
+  "license": "MIT",
+  "scripts": {
+    "prebump": "npx @zumerbox/js-lint --fix && npx @zumerbox/code-format --write",
+    "bump": "npx @zumerbox/bump",
+    "postbump": "npx @zumerbox/changelog && git add CHANGELOG.md && git commit -m \"Bumped version\" && git push --follow-tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zumerlab/zumerbox-doc-extractor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zumerlab/zumerbox-doc-extractor/issues"
+  },
+  "homepage": "https://github.com/zumerlab/zumerbox-doc-extractor/#readme",
+  "dependencies": {
+    "chalk": "*"
+  },
+  "devDependencies": {},
+  "keywords": []
+}
