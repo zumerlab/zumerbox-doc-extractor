@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
-const chalk = require('chalk');
+import chalk from 'chalk'
+import fs from 'fs'
+import path from 'path'
 
 // Function to ensure the output folder exists
 function ensureOutputFolderExists(outputFolderPath) {
