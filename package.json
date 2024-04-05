@@ -23,8 +23,7 @@
   },
   "homepage": "https://github.com/zumerlab/zumerbox-doc-extractor/#readme",
   "dependencies": {
-    "chalk": "*"
+    "chalk": "^5.3.0"
   },
-  "devDependencies": {},
   "keywords": []
 }
