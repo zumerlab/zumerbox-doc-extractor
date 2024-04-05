@@ -1,24 +1,49 @@
-# @zumerbox/npm-init
+# @zumerbox/doc-extractor
 
-A tool for create or update a package.json checking if the package name is valid and available on npm.
+DocExtractor is a Node.js script designed to extract comments from CSS, SCSS, and JavaScript files and generate Markdown documentation files. It provides a command-line interface (CLI) for easy usage.
 
 Refer to the [ZumerBox bundle](https://github.com/zumerlab/zumerbox) for more information and tools.
 
 ## Installation
 
 ```bash
-npm install @zumerbox/npm-init --save-dev
+npm install @zumerbox/doc-extractor --save-dev
 ```
 
 ## Usage
 
+To use DocExtractor, run it from the command line with the following syntax:
+
 ```bash
-npx @zumerbox/npm-init
+npx doc-extractor [entryPath] [options]
 ```
 
-## Features
+### Options:
 
-- **Interactive workflow**: The script guides you through the package initialization process with interactive prompts.
-- **Package validation**: Validates the package name to ensure it meets npm's requirements.
-- **Package name availabity**: Verify the package name is available on npm.
-- **Proxy support**: Supports configuring proxy settings for environments behind a proxy.
+- `[entryPath]`: Path to the entry file, multiple files, or a folder containing the files to extract comments from.
+
+- `-folder [outputFolder]`: Specify the output folder for the generated Markdown files. (Default: 'output')
+
+- `-multiple`: Generate one Markdown file per input file. By default, a consolidated Markdown file named 'docs.md' will be created.
+
+- `-scss-imports`: Include this flag to process SCSS files with `@import` statements. It will extract comments from imported files as well.
+
+### Example:
+
+Extract comments from a single file:
+
+```bash
+npx doc-extractor index.js
+```
+
+Extract comments from multiple files:
+
+```bash
+npx doc-extractor src -multiple
+```
+
+Generate documentation for SCSS files with imports:
+
+```bash
+npx doc-extractor styles/main.scss -scss-imports
+```
