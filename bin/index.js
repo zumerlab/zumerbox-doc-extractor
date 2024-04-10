@@ -19,6 +19,10 @@ function extractComments(filePath) {
     regex = /\/\*!([\s\S]*?)\*\//gm // Comments in CSS and SCSS
   } else if (filePath.endsWith('.js')) {
     regex = /\/\*!([\s\S]*?)\*\//gm // Comments in JS
+  } else {
+    // Handle other file types here if needed
+    console.log(chalk.yellow(`Ignoring file '${filePath}' as it's not a CSS, SCSS, or JS file.`))
+    return comments
   }
   let match
   while ((match = regex.exec(fileContent)) !== null) {
@@ -27,7 +31,7 @@ function extractComments(filePath) {
   if (comments.length === 0) {
     console.log(
       chalk.yellow(
-        `'${path.basename(filePath, path.extname(filePath))}' doesn't have comments to extract.`
+        `'${filePath}' doesn't have comments to extract.`
       )
     ) // Yellow color for no comments found
   }
@@ -35,21 +39,22 @@ function extractComments(filePath) {
 }
 
 // Function to write comments to a Markdown file
-function writeCommentsToMarkdown(comments, outputFilePath, sourcefile) {
+function writeCommentsToMarkdown(comments, outputFilePath, sourcePath) {
   ensureOutputFolderExists(path.dirname(outputFilePath)) // Ensure output folder exists
   let markdownContent = ''
+  let file = path.basename(sourcePath)
   comments.forEach((comment, index) => {
-    markdownContent += `## ${sourcefile}\n\n`
     markdownContent += `${comment}\n\n`
   })
+  if (addSource && publicFolder) markdownContent += `**Source:** [${file}](${publicFolder}/${file})\n`
   fs.appendFileSync(outputFilePath, markdownContent, 'utf8')
   if (entrypointScss || consolidatedMd) {
     console.log(
-      chalk.green(`'${sourcefile}' added to Markdown file successfully.`)
+      chalk.green(`'${file}' added to Markdown file successfully.`)
     ) // Green color for successful file addition
   } else {
     console.log(
-      chalk.green(`Markdown file '${outputFilePath}' updated successfully.`)
+      chalk.green(`Markdown file '${path.basename(outputFilePath)}' processed successfully.`)
     ) // Green color for successful markdown file update
   }
 }
@@ -60,14 +65,14 @@ function processFile(filePath, outputFolder, consolidatedMd, entrypointScss) {
   if (allComments.length > 0) {
     const outputFilePath = path.join(
       outputFolder,
-      consolidatedMd ? 'docs.md' : (
+      consolidatedMd ? outputFilename + '.md' : (
         path.basename(filePath, path.extname(filePath)) + '.md'
       )
     )
     writeCommentsToMarkdown(
       allComments,
       outputFilePath,
-      path.basename(filePath, path.extname(filePath))
+      filePath
     )
   }
   // Check for special case: single SCSS file with @imports
@@ -105,7 +110,7 @@ function processFolder(
     fs.readdirSync(folderPath).forEach((file) => {
       const filePath = path.join(folderPath, file)
       if (fs.statSync(filePath).isDirectory()) {
-        console.log(chalk.yellow(`Skipping directory '${filePath}'.`)) // Yellow color for skipped directory
+        processFolder(filePath, outputFolder, consolidatedMd, entrypointScss) // Recursively process subfolders
       } else if (fs.statSync(filePath).isFile()) {
         processFile(filePath, outputFolder, consolidatedMd, entrypointScss)
       }
@@ -140,8 +145,11 @@ function main(entryPath, outputFolder, consolidatedMd, entrypointScss) {
 const args = process.argv.slice(2)
 let entryPath
 let outputFolder = 'output'
+let publicFolder = ''
+let outputFilename = 'docs'
 let consolidatedMd = true
 let entrypointScss = false
+let addSource = true
 
 if (args.length < 1) {
   console.log(chalk.red('Please provide an entry path.')) // Red color for error message
@@ -155,7 +163,11 @@ for (let i = 1; i < args.length; i++) {
   const arg = args[i]
   switch (arg) {
     case '-folder':
-      outputFolder = args[i + 1] || 'output'
+      outputFolder = args[i + 1]
+      i++
+      break
+    case '-public-folder':
+      publicFolder = args[i + 1]
       i++
       break
     case '-multiple':
@@ -164,6 +176,13 @@ for (let i = 1; i < args.length; i++) {
     case '-scss-imports':
       entrypointScss = true
       break
+    case '-remove-source':
+        addSource = false
+    break
+    case '-output-file':
+      outputFilename = args[i + 1]
+      i++
+    break
     default:
       console.log(chalk.yellow(`Unknown argument: ${arg}`)) // Yellow color for unknown argument
       process.exit(1)
