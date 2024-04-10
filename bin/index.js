@@ -21,7 +21,11 @@ function extractComments(filePath) {
     regex = /\/\*!([\s\S]*?)\*\//gm // Comments in JS
   } else {
     // Handle other file types here if needed
-    console.log(chalk.yellow(`Ignoring file '${filePath}' as it's not a CSS, SCSS, or JS file.`))
+    console.log(
+      chalk.yellow(
+        `Ignoring file '${filePath}' as it's not a CSS, SCSS, or JS file.`
+      )
+    )
     return comments
   }
   let match
@@ -29,11 +33,7 @@ function extractComments(filePath) {
     comments.push(match[1])
   }
   if (comments.length === 0) {
-    console.log(
-      chalk.yellow(
-        `'${filePath}' doesn't have comments to extract.`
-      )
-    ) // Yellow color for no comments found
+    console.log(chalk.yellow(`'${filePath}' doesn't have comments to extract.`)) // Yellow color for no comments found
   }
   return comments
 }
@@ -46,15 +46,16 @@ function writeCommentsToMarkdown(comments, outputFilePath, sourcePath) {
   comments.forEach((comment, index) => {
     markdownContent += `${comment}\n\n`
   })
-  if (addSource && publicFolder) markdownContent += `**Source:** [${file}](${publicFolder}/${file})\n`
+  if (addSource && publicFolder)
+    markdownContent += `**Source:** [${file}](${publicFolder}/${file})\n`
   fs.appendFileSync(outputFilePath, markdownContent, 'utf8')
   if (entrypointScss || consolidatedMd) {
-    console.log(
-      chalk.green(`'${file}' added to Markdown file successfully.`)
-    ) // Green color for successful file addition
+    console.log(chalk.green(`'${file}' added to Markdown file successfully.`)) // Green color for successful file addition
   } else {
     console.log(
-      chalk.green(`Markdown file '${path.basename(outputFilePath)}' processed successfully.`)
+      chalk.green(
+        `Markdown file '${path.basename(outputFilePath)}' processed successfully.`
+      )
     ) // Green color for successful markdown file update
   }
 }
@@ -65,15 +66,11 @@ function processFile(filePath, outputFolder, consolidatedMd, entrypointScss) {
   if (allComments.length > 0) {
     const outputFilePath = path.join(
       outputFolder,
-      consolidatedMd ? outputFilename + '.md' : (
-        path.basename(filePath, path.extname(filePath)) + '.md'
-      )
+      consolidatedMd ?
+        outputFilename + '.md'
+      : path.basename(filePath, path.extname(filePath)) + '.md'
     )
-    writeCommentsToMarkdown(
-      allComments,
-      outputFilePath,
-      filePath
-    )
+    writeCommentsToMarkdown(allComments, outputFilePath, filePath)
   }
   // Check for special case: single SCSS file with @imports
   if (entrypointScss && filePath.endsWith('.scss')) {
@@ -177,12 +174,12 @@ for (let i = 1; i < args.length; i++) {
       entrypointScss = true
       break
     case '-remove-source':
-        addSource = false
-    break
+      addSource = false
+      break
     case '-output-file':
       outputFilename = args[i + 1]
       i++
-    break
+      break
     default:
       console.log(chalk.yellow(`Unknown argument: ${arg}`)) // Yellow color for unknown argument
       process.exit(1)
