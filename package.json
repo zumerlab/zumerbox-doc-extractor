@@ -1,6 +1,6 @@
 {
   "name": "@zumerbox/doc-extractor",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A tool to extract comments from scss, css and js files and create markdown doc files",
   "main": "./bin/index.js",
   "type": "module",
